@@ -1,12 +1,9 @@
 <p align="center">
-  <img src="assets/Linux.png" alt="Linux" width="280" length="50">
+  <img src="assets/oxa-banner.svg" alt="OXA // LNX - Linux Infrastructure & Security, Lab 01" width="100%">
 </p>
-<h1 align="center">OXA // Linux Infrastructure & Security</h1>
 
 <p align="center">
-  <code>root@oxa-linux01:~# ./build --secure --automate --document</code>
-  <br>
-  <strong>SYSTEM ADMINISTRATION · HOST HARDENING · AUTOMATION</strong>
+  <img src="assets/Linux.png" alt="Linux" width="72">
 </p>
 
 <p align="center">
@@ -18,25 +15,13 @@
   <img src="https://img.shields.io/badge/Status-In%20Progress-orange?style=for-the-badge" alt="Status">
 </p>
 
----
-
-```text
-        .--.
-       |o_o |        OXA-LNX-01
-       |:_/ |        "Everything is a file. Everything is auditable."
-      //   \ \
-     (|     | )
-    /'\_   _/`\
-    \___)=(___/
-```
-
 ```console
 [labadmin@oxa-linux01 ~]$ neofetch --oxa
  ───────────────────────────────────────────
   OS ........ Fedora Linux
   Host ...... VMware Workstation (Windows 10)
   Hostname .. oxa-linux01
-  Network ... NAT
+  Network ... Host-only (VMnet1)
   Shell ..... Bash
   Init ...... systemd
   Firewall .. firewalld
@@ -49,284 +34,276 @@
 
 ## `man oxa` — Overview
 
-**OXA Linux Infrastructure** is a hands-on Linux administration and security lab built on Fedora Linux inside VMware Workstation.
+**Lab 01** is a hands-on Linux administration and security project. It prepares, hardens, monitors and automates a Fedora server for a fictional company, **OXA**.
 
-The project simulates the preparation and administration of a Linux server, with an emphasis on **access management, system hardening, security monitoring, and operational automation**.
+The goal is to go beyond isolated commands. Every change is configured, tested, and backed by evidence (output and screenshots) so the whole workflow is repeatable and documented.
 
-The goal is to move beyond basic commands and build a structured administration workflow based on practical configuration, testing, and technical documentation.
-
-| Field        | Value                         |
-| :----------- | :---------------------------- |
-| Project ID   | `OXA-LNX-01`                  |
-| Server       | `oxa-linux01`                 |
-| Environment  | Fedora Linux Virtual Machine  |
-| Status       | In Progress                   |
+| Field        | Value                        |
+| :----------- | :--------------------------- |
+| Project ID   | `OXA-LNX-01`                 |
+| Server       | `oxa-linux01`                |
+| Environment  | Fedora Linux VM in VMware Workstation |
+| Admin client | Windows 10 / PowerShell      |
+| Level        | Intermediate                 |
+| Status       | In progress                  |
 
 ---
 
-## `tree /` — Infrastructure Design
+## `tree /` — Infrastructure Map
 
-A central Fedora server with separate identity, security, and automation components.
+The animation shows the lab's SSH policy at work. A `labadmin` login with a key reaches the server. `root` and `analyst` are refused at sshd.
 
-```text
-                    WINDOWS 10 HOST
-                           │
-                    VMware Workstation
-                           │
-                       NAT NETWORK
-                           │
-                    FEDORA SERVER
-                      oxa-linux01
-                           │
-          ┌────────────────┼────────────────┐
-          │                │                │
-       IDENTITY          SECURITY        AUTOMATION
-          │                │                │
-       labadmin         firewalld        Bash scripts
-       analyst          SELinux          systemd
-       itops             auditd          backup timer
-       employees         SSH
-          │
-      /srv/oxa
-          │
-     DATA ACCESS CONTROL
-```
+<p align="center">
+  <img src="assets/oxa-network.svg" alt="Animated map of the OXA infrastructure" width="100%">
+</p>
 
-## `cat /etc/oxa/environment`
-
-| Component                | Configuration        |
-| :----------------------- | :------------------- |
-| Operating System         | Fedora Linux         |
-| Hypervisor               | VMware Workstation   |
-| Host OS                  | Windows 10           |
-| Hostname                 | `oxa-linux01`        |
-| Administrative Account   | `labadmin`           |
-| Standard Account         | `analyst`            |
-| Groups                   | `itops`, `employees` |
-| Data Directory           | `/srv/oxa`           |
-| Firewall                 | firewalld            |
-| Mandatory Access Control | SELinux              |
-| Security Auditing        | auditd               |
-| Automation               | Bash & systemd       |
+| Component                | Configuration                |
+| :----------------------- | :--------------------------- |
+| Hypervisor               | VMware Workstation           |
+| Management network       | Host-only (VMnet1); optional second NAT adapter for DNF |
+| Administrative account   | `labadmin` (`wheel`, `itops`) |
+| Standard account         | `analyst` (`employees`)      |
+| Company data             | `/srv/oxa`                   |
+| Remote access            | OpenSSH, TCP 22, key authentication |
+| Firewall                 | firewalld                    |
+| Mandatory Access Control | SELinux (enforcing)          |
+| Auditing                 | auditd                       |
+| Automation               | Bash and systemd timer       |
+| Backups                  | `/var/backups/oxa`           |
 
 ---
 
 ## `./roadmap.sh` — Implementation Phases
 
-Seven phases, each one configured, tested, and documented.
-
-| Phase | Implementation               | Main Technologies          | Key Commands                          |
-| :---: | :--------------------------- | :------------------------- | :------------------------------------ |
-|  `00` | Virtual Machine Preparation  | VMware, NAT                | snapshot                              |
-|  `01` | Fedora Initialization        | DNF, NetworkManager        | `dnf` `hostnamectl` `nmcli` `ip`      |
-|  `02` | Identity & Access Management | Users, Groups, Permissions | `useradd` `usermod` `chmod` `chown`   |
-|  `03` | Remote Access Hardening      | OpenSSH                    | `ssh-keygen` `sshd_config`            |
-|  `04` | Host Security                | firewalld, SELinux         | `firewall-cmd` `getenforce` `restorecon` |
-|  `05` | Security Monitoring          | auditd, journalctl         | `ausearch` `aureport` `journalctl`    |
-|  `06` | Backup Automation            | Bash, systemd              | `systemctl` `systemd-analyze`         |
-|  `07` | Final Validation             | Linux diagnostic tools     | `ss` `systemctl` `ls -Z`              |
+| Phase | Implementation               | Key Commands                                          |
+| :---: | :--------------------------- | :---------------------------------------------------- |
+|  `00` | VM preparation and snapshot  | VMware snapshot, `ip`, `nmcli`                        |
+|  `01` | Fedora initialization        | `hostnamectl` `dnf` `ip` `ping`                       |
+|  `02` | Users, groups, permissions   | `useradd` `usermod` `chmod` `chown` `getfacl`         |
+|  `03` | SSH and remote administration | `ssh-keygen` `sshd -t` `sshd -T`                     |
+|  `04` | firewalld and SELinux        | `firewall-cmd` `getenforce` `semanage` `restorecon`   |
+|  `05` | Audit and monitoring         | `auditctl` `ausearch` `journalctl`                    |
+|  `06` | Backups with Bash and systemd | `tar` `systemctl` `systemd-analyze`                  |
+|  `07` | Final validation             | `ss` `systemctl --failed` `ls -Z`                     |
 
 <details>
-<summary><code>[00]</code> Virtual Machine Preparation</summary>
+<summary><code>[00]</code> VM preparation</summary>
 
-Prepare the virtual environment, allocate system resources, configure networking, and create a recovery snapshot.
+Set the VMware adapter to Host-only, identify the real interface, IP and route (never reuse an old address), and create the snapshot `OXA-BEFORE-LAB01`.
 </details>
 
 <details>
-<summary><code>[01]</code> Fedora Initialization</summary>
+<summary><code>[01]</code> Fedora initialization</summary>
 
-Update the operating system, configure the server hostname, inspect network interfaces, and validate routing and DNS.
+Collect system information, set the hostname `oxa-linux01`, run `dnf upgrade --refresh`, install the lab tools (`openssh-server`, `firewalld`, `audit`, `rsync`, `acl`, `policycoreutils-python-utils`, `git`, `tar`) and verify IP and DNS connectivity.
 </details>
 
 <details>
-<summary><code>[02]</code> Identity & Access Management</summary>
+<summary><code>[02]</code> Users, groups and permissions</summary>
 
-Create administrative and standard accounts, organize users into groups, and implement controlled access to `/srv/oxa`.
+Create the groups `itops` and `employees` and the accounts `labadmin` and `analyst`. Build `/srv/oxa/administration` (`root:itops`, mode `2770`) and `/srv/oxa/shared` (`root:employees`, mode `2770`). The setgid bit makes new files inherit the group. Test one expected failure: `analyst` must be refused in `administration`.
 </details>
 
 <details>
-<summary><code>[03]</code> SSH Hardening</summary>
+<summary><code>[03]</code> SSH and remote administration</summary>
 
-Configure the OpenSSH service, implement key-based authentication, and restrict remote administrative access.
+Generate an `ed25519` key on Windows and install the public key for `labadmin`. Apply the hardening file, validate it with `sshd -t`, check effective values with `sshd -T`, and disable password login only after the key login is confirmed from a second window.
 </details>
 
 <details>
-<summary><code>[04]</code> Host Security</summary>
+<summary><code>[04]</code> firewalld and SELinux</summary>
 
-Configure firewalld rules and apply SELinux policies while maintaining an enforcing security posture.
+Allow SSH only in the zone that really carries the management interface. Keep SELinux in `Enforcing`, then add a persistent context for `/srv/oxa/webdata` with `semanage fcontext` and `restorecon`. No web server is deployed in this lab.
 </details>
 
 <details>
-<summary><code>[05]</code> Security Monitoring</summary>
+<summary><code>[05]</code> Audit and monitoring</summary>
 
-Deploy auditd, inspect authentication events, and analyze system logs to improve security visibility.
+Enable `auditd`, load persistent rules from `/etc/audit/rules.d/oxa.rules`, create a test event, and find it with `ausearch -k oxa_admin_directory`. Review SSH and warning-level journal entries and check for failed units.
 </details>
 
 <details>
-<summary><code>[06]</code> Backup Automation</summary>
+<summary><code>[06]</code> Backups with Bash and systemd</summary>
 
-Develop a Bash backup script and schedule automated execution using systemd service and timer units.
+Write `oxa-backup.sh`, which creates a dated, verified `tar.gz` of `/srv/oxa` in `/var/backups/oxa` with mode `600`. Restore it into `/tmp/oxa-restore-test`, then schedule it daily at 02:00 with a service and a timer.
 </details>
 
 <details>
-<summary><code>[07]</code> Final Validation</summary>
+<summary><code>[07]</code> Final validation</summary>
 
-Review system configuration, verify services, inspect permissions, and test the implemented security controls.
+Run the full verification series and compare the results with the acceptance criteria below.
 </details>
 
 ---
 
 ## `sudo hardening --layers` — Security Architecture
 
-Multiple layers of host security, no single point of trust.
-
 | Layer                    | Implementation          | Purpose                            |
 | :----------------------- | :---------------------- | :--------------------------------- |
-| Identity                 | Local accounts & groups | Account separation                 |
-| Authorization            | Linux permissions       | Resource access control            |
-| Remote Access            | OpenSSH                 | Secure administration              |
-| Network Protection       | firewalld               | Traffic filtering                  |
+| Identity                 | Local accounts, groups  | Account separation                 |
+| Authorization            | Permissions, setgid, ACL | Resource access control           |
+| Remote access            | OpenSSH, ed25519 keys   | Secure administration              |
+| Network protection       | firewalld               | Traffic filtering                  |
 | Mandatory Access Control | SELinux                 | Confinement and policy enforcement |
 | Auditing                 | auditd                  | Security event records             |
-| Automation               | systemd                 | Scheduled administration           |
-
-### Security Principles
+| Automation               | systemd timer           | Scheduled, repeatable operations   |
 
 ```text
-[*] Least Privilege
-[*] Defense in Depth
-[*] Secure Remote Administration
-[*] Account Separation
-[*] Controlled Resource Access
-[*] Security Event Auditing
+[*] Least Privilege            [*] Defense in Depth
+[*] Account Separation         [*] Secure Remote Administration
+[*] Controlled Resource Access [*] Security Event Auditing
 [*] Repeatable Administration
+```
+
+---
+
+## `cat /etc/ssh/sshd_config.d/10-oxa-hardening.conf`
+
+```text
+PermitRootLogin no
+PubkeyAuthentication yes
+PasswordAuthentication no      # set to yes during setup, switch only after the key login works
+MaxAuthTries 3
+X11Forwarding no
+AllowGroups wheel
+```
+
+## `cat /etc/audit/rules.d/oxa.rules`
+
+```text
+-w /etc/passwd -p wa -k oxa_identity_changes
+-w /etc/group -p wa -k oxa_group_changes
+-w /etc/sudoers -p wa -k oxa_sudo_changes
+-w /srv/oxa/administration -p wa -k oxa_admin_directory
 ```
 
 ---
 
 ## `systemctl list-timers` — Automation
 
-The automation phase removes repetitive administrative work.
-
 ```text
-   SOURCE DATA
-        │
-        ▼
- BASH BACKUP SCRIPT        scripts/oxa-backup.sh
-        │
-        ▼
- BACKUP DESTINATION        /var/backups/oxa
-        │
-        ▼
- SYSTEMD SERVICE           oxa-backup.service
-        │
-        ▼
- SYSTEMD TIMER             oxa-backup.timer
-        │
-        ▼
- SCHEDULED EXECUTION
+   /srv/oxa
+      │
+      ▼
+ oxa-backup.sh         /usr/local/sbin  ->  scripts/oxa-backup.sh
+      │  tar -czf + tar -tzf verification, mode 600
+      ▼
+ /var/backups/oxa      oxa-YYYY-MM-DD_HH-MM-SS.tar.gz
+      │
+      ▼
+ oxa-backup.service    Type=oneshot
+      │
+      ▼
+ oxa-backup.timer      OnCalendar=*-*-* 02:00:00  Persistent=true
 ```
 
-```text
-scripts/
-└── oxa-backup.sh
+> The backup is local and meant for learning. In production, copy archives to separate storage and test restores regularly.
 
-systemd/
-├── oxa-backup.service
-└── oxa-backup.timer
-```
+---
+
+## `journalctl -u evidence` — Acceptance Criteria
+
+| Control                | Expected result                                   | Status |
+| :--------------------- | :------------------------------------------------ | :----: |
+| Hostname               | `oxa-linux01`                                     | `PEND` |
+| `labadmin`             | Member of `wheel` and `itops`                     | `PEND` |
+| `analyst`              | Member of `employees`, not `wheel`                | `PEND` |
+| `/srv/oxa/administration` | Write allowed for `labadmin`, refused for `analyst` | `PEND` |
+| SSH                    | Key login from Windows works                      | `PEND` |
+| SSH root               | `PermitRootLogin no`                              | `PEND` |
+| SSH password           | `no`, only after the key login is validated       | `PEND` |
+| firewalld              | Active, SSH allowed in the management zone        | `PEND` |
+| SELinux                | Enforcing                                         | `PEND` |
+| auditd                 | Active, 4 OXA rules loaded, test event found      | `PEND` |
+| Backup                 | Archive created, readable and restored in test dir | `PEND` |
+| Timer                  | `oxa-backup.timer` enabled                        | `PEND` |
+
+Update a status to `OK` only after the real test has passed.
+
+### Screenshots
+
+All evidence is real output, captured right after each step is validated and stored in [`screenshots/`](screenshots/).
+
+| #  | File                                   | Shows                                     |
+| :- | :------------------------------------- | :---------------------------------------- |
+| 00 | `00-VMware-Network-Settings.png`       | Network adapter set to Host-only          |
+| 01 | `01-Fedora-Network-Baseline.png`       | `ip -br address`, `ip route`, `nmcli`     |
+| 02 | `02-System-Inventory.png`              | OS, kernel, RAM, disk                     |
+| 03 | `03-OXA-Hostname.png`                  | `oxa-linux01` static hostname             |
+| 04 | `04-Network-Connectivity.png`          | IP, route, ping tests                     |
+| 05 | `05-OXA-Users-Groups.png`              | `id` and `getent group`                   |
+| 06 | `06-OXA-Directory-Permissions.png`     | `ls -ld`, `getfacl`, analyst refusal      |
+| 07 | `07-OXA-SSH-Windows.png`               | Key-based SSH from PowerShell             |
+| 08 | `08-OXA-SSH-Hardening.png`             | `sshd -T` effective settings              |
+| 09 | `09-OXA-Firewalld.png`                 | Active zone and SSH service              |
+| 10 | `10-OXA-SELinux.png`                   | Enforcing and `httpd_sys_content_t`       |
+| 11 | `11-OXA-Audit-Rules.png`               | `auditctl -l`, four rules                 |
+| 12 | `12-OXA-Audit-Test.png`                | `ausearch` test event                     |
+| 13 | `13-OXA-System-Monitoring.png`         | `top`, `free`, `df`, `systemctl --failed` |
+| 14 | `14-OXA-Backup-Script.png`             | Backup script content                     |
+| 15 | `15-OXA-Backup-Archive.png`            | Archive and `tar -tzf` check              |
+| 16 | `16-OXA-Backup-Restore.png`            | Restored files in the test directory      |
+| 17 | `17-OXA-Systemd-Timer.png`             | Timer and successful service run          |
+| 18 | `18-OXA-Final-Validation.png`          | Final checks and active services          |
 
 ---
 
 ## `ls -la` — Repository Structure
 
 ```text
-OXA-Linux-Infrastructure/
-│
+Lab-01-OXA-Linux-Server/
 ├── README.md
-│
 ├── assets/
 │   ├── Linux.png
-│   └── joinus.png
-│
-├── documentation/
-│   ├── OXA_Linux_Lab_01_Complete_Guide.pdf
-│   └── architecture/
-│
-├── configurations/
-│   ├── ssh/
-│   ├── firewalld/
-│   └── audit/
-│
+│   ├── oxa-banner.svg
+│   └── oxa-network.svg
+├── configs/
+│   ├── ssh/10-oxa-hardening.conf
+│   ├── audit/oxa.rules
+│   └── systemd/
+│       ├── oxa-backup.service
+│       └── oxa-backup.timer
 ├── scripts/
 │   └── oxa-backup.sh
-│
-├── systemd/
-│   ├── oxa-backup.service
-│   └── oxa-backup.timer
-│
-├── screenshots/
-│   ├── phase-00/ … phase-07/
-│
-└── .gitignore
+├── screenshots/        # 00 … 18
+└── docs/
+    └── troubleshooting.md
 ```
-
-## `journalctl -u evidence` — Technical Evidence
-
-Every phase is backed by screenshots and configuration proof.
-
-| Evidence              | Expected Content                        |
-| :-------------------- | :-------------------------------------- |
-| System Initialization | Hostname, OS and network configuration  |
-| Identity Management   | Users, groups and permissions           |
-| SSH Security          | Service status and authentication tests |
-| Firewall              | Active zone and authorized services     |
-| SELinux               | Enforcement mode and file contexts      |
-| Audit System          | auditd status and event records         |
-| Backup Automation     | Script execution and generated archives |
-| Final Validation      | Service and security verification       |
-
-> **Rule #1:** all evidence must be real test output. Credentials, private keys, and authentication data are **never** committed. Check `.gitignore` before every `git push`.
 
 ---
 
 ## `systemctl status oxa` — Project Status
 
 ```text
-[  OK   ]  Fedora Installation
-[  OK   ]  VMware Environment
-[ PEND  ]  Network Connectivity
-[ PEND  ]  Identity Management
-[ PEND  ]  SSH Hardening
-[ PEND  ]  firewalld & SELinux
-[ PEND  ]  auditd
-[ PEND  ]  Backup Automation
-[ WAIT  ]  Final Validation
+[  OK   ]  Fedora installation
+[  OK   ]  VMware environment
+[ PEND  ]  Phase 01  Fedora initialization
+[ PEND  ]  Phase 02  Identity and permissions
+[ PEND  ]  Phase 03  SSH remote administration
+[ PEND  ]  Phase 04  firewalld and SELinux
+[ PEND  ]  Phase 05  auditd
+[ PEND  ]  Phase 06  Backup automation
+[ WAIT  ]  Phase 07  Final validation
 ```
 
 Status is updated as each phase is implemented and tested.
 
-## `less documentation/` — Docs
+## `cat /etc/motd` — Security Notes
 
-The complete practical guide includes:
+- No passwords, private SSH keys (`id_ed25519`), tokens or recovery codes are ever committed. Check `.gitignore` before every `git push`.
+- Never disable SELinux to hide an error. Fix the context or policy instead.
+- Keep a working SSH session open while hardening, and test from a second window.
+- Adapt IP addresses and firewalld zones to your own lab. Do not copy addresses from another setup.
+- Real backup archives (`*.tar.gz`) stay out of the repository.
 
-- Step-by-step implementation instructions
-- Required Linux commands
-- Configuration procedures
-- Validation checkpoints
-- Screenshot instructions
-- Troubleshooting guidance
+## `less docs/` — Troubleshooting
 
-**Guide:** [`documentation/OXA_Linux_Lab_01_Complete_Guide.pdf`](documentation/OXA_Linux_Lab_01_Complete_Guide.pdf)
+Problems, causes, fixes and proof of the fix are logged in [`docs/troubleshooting.md`](docs/troubleshooting.md). A documented and understood failure is better than a screenshot that hides it.
 
 ---
 
 <p align="center">
-  <img src="assets/joinus.png" alt="Join Us" width="420">
-</p>
-
-<p align="center">
-  <strong>OXA LINUX INFRASTRUCTURE</strong>
+  <strong>Network &amp; Cybersecurity Student</strong> · <a href="https://github.com/A-straya">github.com/A-straya</a>
   <br>
   <code>BUILD · SECURE · AUTOMATE · DOCUMENT</code>
   <br>

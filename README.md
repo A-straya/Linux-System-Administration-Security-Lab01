@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/Linux.png" alt="Linux" width="300">
+  <img src="assets/Linux.png" alt="Linux" width="150">
 </p>
 
 <h1 align="center">OXA // Linux Infrastructure & Security</h1>

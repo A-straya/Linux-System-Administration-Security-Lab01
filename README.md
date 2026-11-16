@@ -1,184 +1,177 @@
-# OXA — Linux Infrastructure & Security
+<p align="center"> <img src="assets/Linux.png" alt="Linux" width="520"> </p> <h1 align="center">OXA // Linux Infrastructure & Security</h1> <p align="center"> <code>root@oxa-linux01:~# ./build --secure --automate --document</code> <br> <strong>SYSTEM ADMINISTRATION · HOST HARDENING · AUTOMATION</strong> </p> <p align="center"> <img src="https://img.shields.io/badge/OS-Fedora-294172?style=for-the-badge&logo=fedora&logoColor=white" alt="Fedora"> <img src="https://img.shields.io/badge/Shell-Bash-4EAA25?style=for-the-badge&logo=gnubash&logoColor=white" alt="Bash"> <img src="https://img.shields.io/badge/Init-systemd-FCC624?style=for-the-badge&logo=linux&logoColor=black" alt="systemd"> <img src="https://img.shields.io/badge/SELinux-Enforcing-CC0000?style=for-the-badge&logo=redhat&logoColor=white" alt="SELinux"> <img src="https://img.shields.io/badge/VMware-Workstation-607078?style=for-the-badge&logo=vmware&logoColor=white" alt="VMware"> <img src="https://img.shields.io/badge/Status-In%20Progress-orange?style=for-the-badge" alt="Status"> </p>
+text
+        .--.
+       |o_o |        OXA-LNX-01
+       |:_/ |        "Everything is a file. Everything is auditable."
+      //   \ \
+     (|     | )
+    /'\_   _/`\
+    \___)=(___/
+console
+[labadmin@oxa-linux01 ~]$ neofetch --oxa
+ ───────────────────────────────────────────
+  OS ........ Fedora Linux
+  Host ...... VMware Workstation (Windows 10)
+  Hostname .. oxa-linux01
+  Network ... NAT
+  Shell ..... Bash
+  Init ...... systemd
+  Firewall .. firewalld
+  MAC ....... SELinux (enforcing)
+  Audit ..... auditd
+  Data ...... /srv/oxa
+  Project ... OXA-LNX-01  [ IN PROGRESS ]
+ ───────────────────────────────────────────
+man oxa — Overview
 
-\<p align="center">   \<img src="assets/Linux.png" alt="Linux" width="520"> \</p>
+OXA Linux Infrastructure is a hands-on Linux administration and security lab built on Fedora Linux inside VMware Workstation.
 
-\<p align="center">   \<strong>LINUX SYSTEM ADMINISTRATION · INFRASTRUCTURE SECURITY · AUTOMATION\</strong>   \<br>   Fedora Linux | VMware Workstation | Bash | systemd \</p>
+The project simulates the preparation and administration of a Linux server, with an emphasis on access management, system hardening, security monitoring, and operational automation.
 
-\<p align="center">   \<img src="[https://img.shields.io/badge/OS-Fedora-294172?style=flat-square&logo=fedora&logoColor=white](https://img.shields.io/badge/OS-Fedora-294172?style=flat-square\&logo=fedora\&logoColor=white)">   \<img src="[https://img.shields.io/badge/Virtualization-VMware-607078?style=flat-square&logo=vmware&logoColor=white](https://img.shields.io/badge/Virtualization-VMware-607078?style=flat-square\&logo=vmware\&logoColor=white)">   \<img src="[https://img.shields.io/badge/Focus-Linux%20Security-75B900?style=flat-square](https://img.shields.io/badge/Focus-Linux%20Security-75B900?style=flat-square)">   \<img src="[https://img.shields.io/badge/Level-Intermediate-555555?style=flat-square](https://img.shields.io/badge/Level-Intermediate-555555?style=flat-square)"> \</p>
+The goal is to move beyond basic commands and build a structured administration workflow based on practical configuration, testing, and technical documentation.
 
----
+Field	Value
+Project ID	OXA-LNX-01
+Server	oxa-linux01
+Environment	Fedora Linux Virtual Machine
+Status	In Progress
+tree / — Infrastructure Design
 
-## Overview
+A central Fedora server with separate identity, security, and automation components.
 
-**OXA Linux Infrastructure** is a hands-on Linux administration and security lab built on Fedora Linux inside VMware Workstation.
-
-The project simulates the preparation and administration of a Linux server environment, with an emphasis on access management, system hardening, security monitoring, and operational automation.
-
-The objective is to move beyond basic Linux commands and implement a structured administration workflow based on practical configuration, testing, and technical documentation.
-
-> **Project ID:** OXA-LNX-01
-> **Server:** `oxa-linux01`
-> **Environment:** Fedora Linux Virtual Machine
-> **Project Status:** In Progress
-
-## Infrastructure Design
-
-The environment is organized around a central Fedora server, with separate administration, security, and automation components.
-
-```text
+text
                     WINDOWS 10 HOST
-                           |
+                           │
                     VMware Workstation
-                           |
+                           │
                        NAT NETWORK
-                           |
+                           │
                     FEDORA SERVER
                       oxa-linux01
-                           |
-          +----------------+----------------+
-          |                |                |
+                           │
+          ┌────────────────┼────────────────┐
+          │                │                │
        IDENTITY          SECURITY        AUTOMATION
-          |                |                |
-       labadmin         Firewalld        Bash Scripts
+          │                │                │
+       labadmin         firewalld        Bash scripts
        analyst          SELinux          systemd
-       itops             Auditd          Backup Timer
+       itops             auditd          backup timer
        employees         SSH
-          |
+          │
       /srv/oxa
-          |
+          │
      DATA ACCESS CONTROL
-```
+cat /etc/oxa/environment
+Component	Configuration
+Operating System	Fedora Linux
+Hypervisor	VMware Workstation
+Host OS	Windows 10
+Hostname	oxa-linux01
+Administrative Account	labadmin
+Standard Account	analyst
+Groups	itops, employees
+Data Directory	/srv/oxa
+Firewall	firewalld
+Mandatory Access Control	SELinux
+Security Auditing	auditd
+Automation	Bash & systemd
+./roadmap.sh — Implementation Phases
 
-## Environment
+Seven phases, each one configured, tested, and documented.
 
-| Component                | Configuration        |
-| :----------------------- | :------------------- |
-| Operating System         | Fedora Linux         |
-| Hypervisor               | VMware Workstation   |
-| Host OS                  | Windows 10           |
-| Hostname                 | `oxa-linux01`        |
-| Administrative Account   | `labadmin`           |
-| Standard Account         | `analyst`            |
-| Groups                   | `itops`, `employees` |
-| Data Directory           | `/srv/oxa`           |
-| Firewall                 | Firewalld            |
-| Mandatory Access Control | SELinux              |
-| Security Auditing        | Auditd               |
-| Automation               | Bash & systemd       |
-
-## Implementation Roadmap
-
-The project is divided into seven implementation phases.
-
-| Phase | Implementation               | Main Technologies          |
-| :---: | :--------------------------- | :------------------------- |
-|   00  | Virtual Machine Preparation  | VMware, NAT                |
-|   01  | Fedora Initialization        | DNF, NetworkManager        |
-|   02  | Identity & Access Management | Users, Groups, Permissions |
-|   03  | Remote Access Hardening      | OpenSSH                    |
-|   04  | Host Security                | Firewalld, SELinux         |
-|   05  | Security Monitoring          | Auditd, journalctl         |
-|   06  | Backup Automation            | Bash, systemd              |
-|   07  | Final Validation             | Linux Diagnostic Tools     |
-
-### 00 — Virtual Machine Preparation
+Phase	Implementation	Main Technologies	Key Commands
+00	Virtual Machine Preparation	VMware, NAT	snapshot
+01	Fedora Initialization	DNF, NetworkManager	dnf hostnamectl nmcli ip
+02	Identity & Access Management	Users, Groups, Permissions	useradd usermod chmod chown
+03	Remote Access Hardening	OpenSSH	ssh-keygen sshd_config
+04	Host Security	firewalld, SELinux	firewall-cmd getenforce restorecon
+05	Security Monitoring	auditd, journalctl	ausearch aureport journalctl
+06	Backup Automation	Bash, systemd	systemctl systemd-analyze
+07	Final Validation	Linux diagnostic tools	ss systemctl ls -Z
+<details> <summary><code>[00]</code> Virtual Machine Preparation</summary>
 
 Prepare the virtual environment, allocate system resources, configure networking, and create a recovery snapshot.
 
-### 01 — Fedora Initialization
+</details> <details> <summary><code>[01]</code> Fedora Initialization</summary>
 
 Update the operating system, configure the server hostname, inspect network interfaces, and validate routing and DNS.
 
-### 02 — Identity & Access Management
+</details> <details> <summary><code>[02]</code> Identity & Access Management</summary>
 
-Create administrative and standard accounts, organize users into groups, and implement controlled access to `/srv/oxa`.
+Create administrative and standard accounts, organize users into groups, and implement controlled access to /srv/oxa.
 
-### 03 — SSH Hardening
+</details> <details> <summary><code>[03]</code> SSH Hardening</summary>
 
 Configure the OpenSSH service, implement key-based authentication, and restrict remote administrative access.
 
-### 04 — Host Security
+</details> <details> <summary><code>[04]</code> Host Security</summary>
 
-Configure Firewalld rules and apply SELinux security policies while maintaining an enforcing security posture.
+Configure firewalld rules and apply SELinux policies while maintaining an enforcing security posture.
 
-### 05 — Security Monitoring
+</details> <details> <summary><code>[05]</code> Security Monitoring</summary>
 
-Deploy Auditd, inspect authentication events, and analyze system logs to improve security visibility.
+Deploy auditd, inspect authentication events, and analyze system logs to improve security visibility.
 
-### 06 — Backup Automation
+</details> <details> <summary><code>[06]</code> Backup Automation</summary>
 
 Develop a Bash backup script and schedule automated execution using systemd service and timer units.
 
-### 07 — Final Validation
+</details> <details> <summary><code>[07]</code> Final Validation</summary>
 
 Review system configuration, verify services, inspect permissions, and test the implemented security controls.
 
----
+</details>
+sudo hardening --layers — Security Architecture
 
-## Security Architecture
+Multiple layers of host security, no single point of trust.
 
-The lab applies multiple layers of host security.
+Layer	Implementation	Purpose
+Identity	Local accounts & groups	Account separation
+Authorization	Linux permissions	Resource access control
+Remote Access	OpenSSH	Secure administration
+Network Protection	firewalld	Traffic filtering
+Mandatory Access Control	SELinux	Confinement and policy enforcement
+Auditing	auditd	Security event records
+Automation	systemd	Scheduled administration
+Security Principles
+text
+[*] Least Privilege
+[*] Defense in Depth
+[*] Secure Remote Administration
+[*] Account Separation
+[*] Controlled Resource Access
+[*] Security Event Auditing
+[*] Repeatable Administration
+systemctl list-timers — Automation
 
-| Security Layer           | Implementation          | Purpose                            |
-| :----------------------- | :---------------------- | :--------------------------------- |
-| Identity                 | Local Accounts & Groups | Account separation                 |
-| Authorization            | Linux Permissions       | Resource access control            |
-| Remote Access            | OpenSSH                 | Secure administration              |
-| Network Protection       | Firewalld               | Traffic filtering                  |
-| Mandatory Access Control | SELinux                 | Confinement and policy enforcement |
-| Auditing                 | Auditd                  | Security event records             |
-| Automation               | systemd                 | Scheduled administration           |
+The automation phase removes repetitive administrative work.
 
-### Security Principles
-
-- Least Privilege
-- Defense in Depth
-- Secure Remote Administration
-- Account Separation
-- Controlled Resource Access
-- Security Event Auditing
-- Repeatable Administration
-
-## Automation
-
-The automation phase focuses on reducing repetitive administrative operations.
-
-**Backup workflow**
-
-```text
-       SOURCE DATA
-            |
-            v
-     BASH BACKUP SCRIPT
-            |
-            v
-     BACKUP DESTINATION
-       /var/backups/oxa
-            |
-            v
-      SYSTEMD SERVICE
-            |
-            v
-       SYSTEMD TIMER
-            |
-            v
-     SCHEDULED EXECUTION
-```
-
-Main project files:
-
-```text
+text
+   SOURCE DATA
+        │
+        ▼
+ BASH BACKUP SCRIPT        scripts/oxa-backup.sh
+        │
+        ▼
+ BACKUP DESTINATION        /var/backups/oxa
+        │
+        ▼
+ SYSTEMD SERVICE           oxa-backup.service
+        │
+        ▼
+ SYSTEMD TIMER             oxa-backup.timer
+        │
+        ▼
+ SCHEDULED EXECUTION
+text
 scripts/
 └── oxa-backup.sh
 
 systemd/
 ├── oxa-backup.service
 └── oxa-backup.timer
-```
-
-## Repository Structure
-
-```text
+ls -la — Repository Structure
+text
 OXA-Linux-Infrastructure/
 │
 ├── README.md
@@ -204,66 +197,50 @@ OXA-Linux-Infrastructure/
 │   └── oxa-backup.timer
 │
 ├── screenshots/
-│   ├── phase-00/
-│   ├── phase-01/
-│   ├── phase-02/
-│   ├── phase-03/
-│   ├── phase-04/
-│   ├── phase-05/
-│   ├── phase-06/
-│   └── phase-07/
+│   ├── phase-00/ … phase-07/
 │
 └── .gitignore
-```
+journalctl -u evidence — Technical Evidence
 
-## Technical Evidence
+Every phase is backed by screenshots and configuration proof.
 
-Each implementation phase is documented with screenshots and configuration evidence.
+Evidence	Expected Content
+System Initialization	Hostname, OS and network configuration
+Identity Management	Users, groups and permissions
+SSH Security	Service status and authentication tests
+Firewall	Active zone and authorized services
+SELinux	Enforcement mode and file contexts
+Audit System	auditd status and event records
+Backup Automation	Script execution and generated archives
+Final Validation	Service and security verification
 
-| Evidence              | Expected Content                        |
-| :-------------------- | :-------------------------------------- |
-| System Initialization | Hostname, OS and network configuration  |
-| Identity Management   | Users, groups and permissions           |
-| SSH Security          | Service status and authentication tests |
-| Firewall              | Active zone and authorized services     |
-| SELinux               | Enforcement mode and file contexts      |
-| Audit System          | Auditd status and event records         |
-| Backup Automation     | Script execution and generated archives |
-| Final Validation      | Service and security verification       |
+Rule #1: all evidence must be real test output. Credentials, private keys, and authentication data are never committed. Check .gitignore before every git push.
 
-All evidence should represent actual test results. Sensitive credentials, private keys, and authentication data must never be committed to the repository.
+systemctl status oxa — Project Status
+text
+[  OK   ]  Fedora Installation
+[  OK   ]  VMware Environment
+[ PEND  ]  Network Connectivity
+[ PEND  ]  Identity Management
+[ PEND  ]  SSH Hardening
+[ PEND  ]  firewalld & SELinux
+[ PEND  ]  auditd
+[ PEND  ]  Backup Automation
+[ WAIT  ]  Final Validation
 
-## Project Status
+Status is updated as each phase is implemented and tested.
 
-| Component            | Status             |
-| :------------------- | :----------------- |
-| Fedora Installation  | Completed          |
-| VMware Environment   | Configured         |
-| Network Connectivity | Pending Validation |
-| Identity Management  | Pending Validation |
-| SSH Hardening        | Pending Validation |
-| Firewalld & SELinux  | Pending Validation |
-| Auditd               | Pending Validation |
-| Backup Automation    | Pending Validation |
-| Final Validation     | Pending            |
-
-The status is updated as each phase is implemented and successfully tested.
-
-## Documentation
+less documentation/ — Docs
 
 The complete practical guide includes:
 
-- Step-by-step implementation instructions
-- Required Linux commands
-- Configuration procedures
-- Validation checkpoints
-- Screenshot instructions
-- Troubleshooting guidance
+Step-by-step implementation instructions
+Required Linux commands
+Configuration procedures
+Validation checkpoints
+Screenshot instructions
+Troubleshooting guidance
 
-**Guide:** `documentation/OXA_Linux_Lab_01_Complete_Guide.pdf`
+Guide: documentation/OXA_Linux_Lab_01_Complete_Guide.pdf
 
----
-
-\<p align="center">   \<img src="assets/joinus.png" alt="Join Us" width="420"> \</p>
-
-\<p align="center">   \<strong>OXA LINUX INFRASTRUCTURE\</strong>   \<br>   \<sub>BUILD · SECURE · AUTOMATE · DOCUMENT\</sub> \</p>
+<p align="center"> <img src="assets/joinus.png" alt="Join Us" width="420"> </p> <p align="center"> <strong>OXA LINUX INFRASTRUCTURE</strong> <br> <code>BUILD · SECURE · AUTOMATE · DOCUMENT</code> <br> <sub>[labadmin@oxa-linux01 ~]$ <code>exit</code></sub>

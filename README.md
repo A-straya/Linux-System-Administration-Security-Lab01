@@ -251,23 +251,41 @@ All evidence is real output, captured right after each step is validated and sto
 ## `ls -la` — Repository Structure
 
 ```text
-Lab-01-OXA-Linux-Server/
+OXA-Linux-Infrastructure/
+│
 ├── README.md
+│
 ├── assets/
 │   ├── Linux.png
-│   ├── oxa-banner.svg
-│   └── oxa-network.svg
-├── configs/
-│   ├── ssh/10-oxa-hardening.conf
-│   ├── audit/oxa.rules
-│   └── systemd/
-│       ├── oxa-backup.service
-│       └── oxa-backup.timer
+│   └── joinus.png
+│
+├── documentation/
+│   ├── OXA_Linux_Lab_01_Complete_Guide.pdf
+│   └── architecture/
+│
+├── configurations/
+│   ├── ssh/
+│   ├── firewalld/
+│   └── audit/
+│
 ├── scripts/
 │   └── oxa-backup.sh
-├── screenshots/        # 00 … 18
-└── docs/
-    └── troubleshooting.md
+│
+├── systemd/
+│   ├── oxa-backup.service
+│   └── oxa-backup.timer
+│
+├── screenshots/
+│   ├── phase-00/
+│   ├── phase-01/
+│   ├── phase-02/
+│   ├── phase-03/
+│   ├── phase-04/
+│   ├── phase-05/
+│   ├── phase-06/
+│   └── phase-07/
+│
+└── .gitignore
 ```
 
 ---
